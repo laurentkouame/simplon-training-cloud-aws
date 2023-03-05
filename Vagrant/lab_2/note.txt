@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# Mise a jour de apt
+sudo apt update -y
+
+# Installation de curl
+sudo apt install curl -y
+
+# Telechargement du fichier test-docker.sh avec curl
+curl -fsSL https://test.docker.com -o test-docker.sh
+
+# Execution du fichier test-docker.sh
+sudo sh test-docker.sh
+
+# Verifier la version de docker
+docker --version
+
+# Telecharger des images 
+### Nginx
+docker pull nginx
+### Mariadb
+docker pull mariadb
+### alpine
+docker pull alpine
+### debian
+docker pull debian
+
+# Lister les images telecharge
+docker images
+
+#### Creation de reseau sous docker
+
+
+#### Creation du réseau de bridge
+sudo docker network create -d bridge --subnet 192.168.80.0/24 reseau_test_1
+
+# lister les reseaux
+docker network ls 
+
+#### Creation de 2 conteneurs nginx et l'attacher au reseau
+sudo docker run -tid --name alpine_test_1 --network reseau_test_1 alpine
+sudo docker run -tid --name alpine_test_2 --network reseau_test_1 alpine
+
+
+## Verification de l'ip des 2 conteneurs
+sudo docker exec -ti alpine_test_1 ip a
+sudo docker exec -ti alpine_test_2 ip a
+
+## Tester le ping entre les conteneurs
+sudo docker exec -ti alpine_test_1 ping alpine_test_2
+
+## Creation de conteneur sur le reseau par defaut de docker & verification de l'ip
+sudo docker run -tid --name alpine_test_3 alpine
+sudo docker exec -ti alpine_test_3 ip a
+
+#### creation du mapping et le faire mapper à un port 8081
+sudo docker run -d -p 8081:80 --name nginx_test_1 nginx
+
+# Affichage de l'ip du conteneur nginx_test_1
+sudo docker exec -ti nginx_test_1 ip a
+
+### Creation de volume
+sudo docker volume create volume_test_1
+# Lister les volumes
+sudo docker volume ls
+
+## Creation du conteneur nginx et le monter sur le volume
+sudo docker run -tid --name web -p 8082:80 --mount source=volume_test_1,target=/usr/share/nginx/html nginx
+
+# afficher la page web
+curl http://$IP:8082
+
+
+
+

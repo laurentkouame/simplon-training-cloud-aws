@@ -1,0 +1,28 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "ubuntu/bionic64"
+  # Box setting
+  config.vm.box_check_update = false
+  config.vbguest.auto_update = false
+
+  # Network setting
+  #config.vm.network "forwarded_port", guest: 80, host: 8081
+
+  # Provision setting
+  config.vm.provision "shell", path: "run.sh"
+
+  # Provider setting
+  config.vm.provider "virtualbox" do |vb|
+    # Display the VirtualBox GUI when booting the machine
+    vb.gui = true
+    vb.check_guest_additions = false
+    vb.name = "box_name_2"
+    # Customize the amount of memory and cpu on the VM:
+    vb.memory = 2048
+    vb.cpus = 2
+  end
+
+end
